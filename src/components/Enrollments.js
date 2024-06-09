@@ -2,20 +2,46 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Enrollments = () => {
+const url = "http://localhost:8080";
     const [enrollments, setEnrollments] = useState([]);
     const [form, setForm] = useState({
         studentId: '',
+        studentName: '',
         courseId: '',
+        courseName: '',
         enrollmentDate: ''
+    });
+
+    const [students, setStudents] = useState([]);
+    const [formStudent, setFormStudent] = useState({
+        studentId: '',
+        studentName: ''
+    });
+    const [courses, setCourses] = useState([]);
+    const [formCourse, setFormCourse] = useState({
+        courseName: '',
+        courseId: ''
     });
 
     useEffect(() => {
         fetchEnrollments();
+        fetchStudents();
+        fetchCourses();
     }, []);
 
     const fetchEnrollments = async () => {
-        const response = await axios.get('localhost:8080/enrollments');
+        const response = await axios.get(url + '/enrollments');
         setEnrollments(response.data);
+    };
+    const fetchStudents = async () => {
+        const response = await axios.get(url+'/students');
+        setStudents(response.data);
+            console.log(response.data);
+    };
+
+    const fetchCourses = async () => {
+        const response = await axios.get(url+'/courses');
+        setCourses(response.data);
     };
 
     const handleChange = (e) => {
@@ -29,13 +55,23 @@ const Enrollments = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (form.enrollmentId) {
-            await axios.put(`localhost:8080/enrollments/${form.enrollmentId}`, form);
+            await axios.put(url + `/enrollments/${form.enrollmentId}`, form)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         } else {
-            await axios.post('localhost:8080/enrollments', form);
+            await axios.post(url + '/enrollments', form)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         }
         setForm({
             studentId: '',
+            studentName: '',
             courseId: '',
+            courseName: '',
             enrollmentDate: ''
         });
         fetchEnrollments();
@@ -46,7 +82,11 @@ const Enrollments = () => {
     };
 
     const handleDelete = async (enrollmentId) => {
-        await axios.delete(`localhost:8080/enrollments/${enrollmentId}`);
+        await axios.delete(url + `/enrollments/${enrollmentId}`)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         fetchEnrollments();
     };
 
@@ -54,16 +94,20 @@ const Enrollments = () => {
         <div>
             <h1>Enrollments</h1>
             <form onSubmit={handleSubmit}>
-                <input name="studentId" placeholder="Student ID" value={form.studentId} onChange={handleChange} required />
-                <input name="courseId" placeholder="Course ID" value={form.courseId} onChange={handleChange} required />
+                <select name="courseId" value={form.courseId} onChange={handleChange} required>
+                    {courses.map(course => (<option value={course.courseId}>{course.courseName}</option>))}
+                </select>
+                <select name="studentId" value={form.studentId} onChange={handleChange} required>
+                    {students.map(student => (<option value={student.studentId}>{student.studentName}</option>))}
+                </select>
                 <input type="date" name="enrollmentDate" value={form.enrollmentDate} onChange={handleChange} required />
                 <button type="submit">Save</button>
             </form>
             <table>
                 <thead>
                     <tr>
-                        <th>Student ID</th>
-                        <th>Course ID</th>
+                        <th>Student Name</th>
+                        <th>Course Name</th>
                         <th>Enrollment Date</th>
                         <th>Actions</th>
                     </tr>
@@ -71,8 +115,8 @@ const Enrollments = () => {
                 <tbody>
                     {enrollments.map(enrollment => (
                         <tr key={enrollment.enrollmentId}>
-                            <td>{enrollment.studentId}</td>
-                            <td>{enrollment.courseId}</td>
+                            <td>{enrollment.studentName}</td>
+                            <td>{enrollment.courseName}</td>
                             <td>{enrollment.enrollmentDate}</td>
                             <td>
                                 <button onClick={() => handleEdit(enrollment)}>Edit</button>

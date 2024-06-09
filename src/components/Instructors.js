@@ -28,9 +28,17 @@ const Instructors = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (form.instructorId) {
-            await axios.put(`localhost:8080/instructors/${form.instructorId}`, form);
+            await axios.put(`localhost:8080/instructors/${form.instructorId}`, form)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         } else {
-            await axios.post('localhost:8080/instructors', form);
+            await axios.post('localhost:8080/instructors', form)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         }
         setForm({
             instructorName: '',

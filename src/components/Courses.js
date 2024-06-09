@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Courses = () => {
+    const url = "http://localhost:8080";
     const [courses, setCourses] = useState([]);
     const [form, setForm] = useState({
         courseName: '',
-        departmentId: ''
+        department: {
+        departmentId: '',
+        departmentName: ''
+        }
     });
 
     useEffect(() => {
@@ -13,7 +17,7 @@ const Courses = () => {
     }, []);
 
     const fetchCourses = async () => {
-        const response = await axios.get('localhost:8080/courses');
+        const response = await axios.get(url+'/courses');
         setCourses(response.data);
     };
 
@@ -28,9 +32,17 @@ const Courses = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (form.courseId) {
-            await axios.put(`localhost:8080/courses/${form.courseId}`, form);
+            await axios.put(url+`/courses/${form.courseId}`, form)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         } else {
-            await axios.post('localhost:8080/courses', form);
+            await axios.post(url+'/courses', form)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         }
         setForm({
             courseName: '',
@@ -44,7 +56,11 @@ const Courses = () => {
     };
 
     const handleDelete = async (courseId) => {
-        await axios.delete(`localhost:8080/courses/${courseId}`);
+        await axios.delete(`/courses/${courseId}`)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         fetchCourses();
     };
 
@@ -53,7 +69,7 @@ const Courses = () => {
             <h1>Courses</h1>
             <form onSubmit={handleSubmit}>
                 <input name="courseName" placeholder="Course Name" value={form.courseName} onChange={handleChange} required />
-                <input name="departmentId" placeholder="Department ID" value={form.departmentId} onChange={handleChange} required />
+                <input name="departmentId" placeholder="Department ID" value={form.department.departmentId} onChange={handleChange} required />
                 <button type="submit">Save</button>
             </form>
             <table>
@@ -68,7 +84,7 @@ const Courses = () => {
                     {courses.map(course => (
                         <tr key={course.courseId}>
                             <td>{course.courseName}</td>
-                            <td>{course.departmentId}</td>
+                            <td>{course.department.departmentName}</td>
                             <td>
                                 <button onClick={() => handleEdit(course)}>Edit</button>
                                 <button onClick={() => handleDelete(course.courseId)}>Delete</button>
