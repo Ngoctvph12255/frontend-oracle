@@ -2,19 +2,34 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Instructors = () => {
+    const url = "http://localhost:8080";
     const [instructors, setInstructors] = useState([]);
     const [form, setForm] = useState({
         instructorName: '',
-        departmentId: ''
+        departmentId: '',
+        departmentName: ''
     });
 
+    const [departments, setDepartments] = useState([]);
+    const [formDepartment, setFormDepartment] = useState({
+        departmentId: '',
+        departmentName: ''
+    });
     useEffect(() => {
         fetchInstructors();
+        fetchDepartments();
     }, []);
 
     const fetchInstructors = async () => {
-        const response = await axios.get('localhost:8080/instructors');
+        const response = await axios.get(url+ '/instructors');
         setInstructors(response.data);
+    };
+
+
+    const fetchDepartments = async () => {
+        const response = await axios.get(url+'/departments');
+        setDepartments(response.data);
+            console.log(response.data);
     };
 
     const handleChange = (e) => {
@@ -28,13 +43,13 @@ const Instructors = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (form.instructorId) {
-            await axios.put(`localhost:8080/instructors/${form.instructorId}`, form)
+            await axios.put(url+`/instructors/${form.instructorId}`, form)
             .then(()=>{
             }).catch((error)=>{
                alert(error);
             });
         } else {
-            await axios.post('localhost:8080/instructors', form)
+            await axios.post(url+ '/instructors', form)
             .then(()=>{
             }).catch((error)=>{
                alert(error);
@@ -42,7 +57,8 @@ const Instructors = () => {
         }
         setForm({
             instructorName: '',
-            departmentId: ''
+            departmentId: '',
+            departmentName: ''
         });
         fetchInstructors();
     };
@@ -52,7 +68,11 @@ const Instructors = () => {
     };
 
     const handleDelete = async (instructorId) => {
-        await axios.delete(`localhost:8080/instructors/${instructorId}`);
+        await axios.delete(url+`/instructors/${instructorId}`)
+            .then(()=>{
+            }).catch((error)=>{
+               alert(error);
+            });
         fetchInstructors();
     };
 
@@ -61,14 +81,16 @@ const Instructors = () => {
             <h1>Instructors</h1>
             <form onSubmit={handleSubmit}>
                 <input name="instructorName" placeholder="Instructor Name" value={form.instructorName} onChange={handleChange} required />
-                <input name="departmentId" placeholder="Department ID" value={form.departmentId} onChange={handleChange} required />
+                <select name="departmentId" value={form.departmentId} onChange={handleChange} required>
+                    {departments.map(department => (<option value={department.departmentId}>{department.departmentName}</option>))}
+                </select>
                 <button type="submit">Save</button>
             </form>
             <table>
                 <thead>
                     <tr>
                         <th>Instructor Name</th>
-                        <th>Department ID</th>
+                        <th>Department Name</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -76,7 +98,7 @@ const Instructors = () => {
                     {instructors.map(instructor => (
                         <tr key={instructor.instructorId}>
                             <td>{instructor.instructorName}</td>
-                            <td>{instructor.departmentId}</td>
+                            <td>{instructor.departmentName}</td>
                             <td>
                                 <button onClick={() => handleEdit(instructor)}>Edit</button>
                                 <button onClick={() => handleDelete(instructor.instructorId)}>Delete</button>

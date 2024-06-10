@@ -13,19 +13,19 @@ const App = () => {
             <div>
                 <nav>
                     <ul>
+                        <li><Link to="/departments">Departments</Link></li>
                         <li><Link to="/students">Students</Link></li>
                         <li><Link to="/courses">Courses</Link></li>
                         <li><Link to="/instructors">Instructors</Link></li>
                         <li><Link to="/enrollments">Enrollments</Link></li>
-                        <li><Link to="/departments">Departments</Link></li>
                     </ul>
                 </nav>
                 <Switch>
+                    <Route path="/departments" component={Departments} />
                     <Route path="/students" component={Students} />
                     <Route path="/courses" component={Courses} />
                     <Route path="/instructors" component={Instructors} />
                     <Route path="/enrollments" component={Enrollments} />
-                    <Route path="/departments" component={Departments} />
                 </Switch>
             </div>
         </Router>

@@ -54,6 +54,7 @@ const url = "http://localhost:8080";
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        let response;
         if (form.enrollmentId) {
             await axios.put(url + `/enrollments/${form.enrollmentId}`, form)
             .then(()=>{

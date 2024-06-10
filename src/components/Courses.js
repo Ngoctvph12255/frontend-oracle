@@ -12,13 +12,26 @@ const Courses = () => {
         }
     });
 
+    const [departments, setDepartments] = useState([]);
+    const [formDepartment, setFormDepartment] = useState({
+        departmentId: '',
+        departmentName: ''
+    });
+
     useEffect(() => {
         fetchCourses();
+        fetchDepartments();
     }, []);
 
     const fetchCourses = async () => {
         const response = await axios.get(url+'/courses');
         setCourses(response.data);
+    };
+
+    const fetchDepartments = async () => {
+        const response = await axios.get(url+'/departments');
+        setDepartments(response.data);
+            console.log(response.data);
     };
 
     const handleChange = (e) => {
@@ -56,7 +69,7 @@ const Courses = () => {
     };
 
     const handleDelete = async (courseId) => {
-        await axios.delete(`/courses/${courseId}`)
+        await axios.delete(url+`/courses/${courseId}`)
             .then(()=>{
             }).catch((error)=>{
                alert(error);
@@ -69,14 +82,16 @@ const Courses = () => {
             <h1>Courses</h1>
             <form onSubmit={handleSubmit}>
                 <input name="courseName" placeholder="Course Name" value={form.courseName} onChange={handleChange} required />
-                <input name="departmentId" placeholder="Department ID" value={form.department.departmentId} onChange={handleChange} required />
+                <select name="departmentId" value={form.departmentId} onChange={handleChange} required>
+                                    {departments.map(department => (<option value={department.departmentId}>{department.departmentName}</option>))}
+                </select>
                 <button type="submit">Save</button>
             </form>
             <table>
                 <thead>
                     <tr>
                         <th>Course Name</th>
-                        <th>Department ID</th>
+                        <th>Department Name</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
